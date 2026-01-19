@@ -4,30 +4,31 @@ const phanTich = require("./phanTich");
 const { tachChuoi } = require("./tachChuoi");
 const guiTelegram = require("./telegram");
 
-let sent = new Set();
-
 async function worker() {
+  console.log("⏱ Worker tick");
+
   const kq = await layKetQua();
+  console.log("📥 Kết quả API:", kq);
   if (!kq) return;
 
-  let chuoi = docChuoi();
-  if (chuoi.slice(-1) === kq) return;
-
+  let chuoi = docChuoi() || "";
   chuoi += kq;
   ghiChuoi(chuoi);
 
-  if (chuoi.length < 10) return;
+  console.log("🔢 Chuỗi hiện tại:", chuoi);
+
+  if (chuoi.length < 3) return;
 
   const chuoi10 = chuoi.slice(-10);
+  console.log("✂️ Chuỗi 10:", chuoi10);
+
   const cacCau = tachChuoi(chuoi10);
+  console.log("📐 Các cầu:", cacCau);
 
   for (const c of cacCau) {
     if (c.length < 2) continue;
 
     const pt = phanTich(c);
-    const key = c + pt.ket_luan;
-    if (sent.has(key)) continue;
-    sent.add(key);
 
     const msg =
 `🎮 Game: Sunwin
@@ -41,6 +42,7 @@ async function worker() {
 \`${c} → ${pt.ket_luan}\`
 `;
 
+    console.log("📤 Gửi Telegram:\n", msg);
     await guiTelegram(msg);
   }
 }
