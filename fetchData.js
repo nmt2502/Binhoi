@@ -9,12 +9,13 @@ async function layKetQua() {
 
     if (!data || !data.ket_qua) return null;
 
-    const kq = data.ket_qua.toLowerCase();
-    if (kq.includes("t")) return "T";
-    if (kq.includes("x")) return "X";
+    const kq = data.ket_qua.toString().toLowerCase();
+
+    if (kq.includes("t")) return "T"; // Tài
+    if (kq.includes("x")) return "X"; // Xỉu
 
     return null;
-  } catch {
+  } catch (err) {
     return null;
   }
 }
