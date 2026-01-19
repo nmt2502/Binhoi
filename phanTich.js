@@ -1,42 +1,43 @@
 function phanTichChuoi(chuoi) {
-  if (chuoi.length < 6) {
-    return {
-      ket_luan: "CHỜ",
-      ly_do: "Chuỗi quá ngắn",
-    };
+  const arr = chuoi.split("");
+
+  // đếm bệt cuối
+  let betCuoi = 1;
+  for (let i = arr.length - 1; i > 0; i--) {
+    if (arr[i] === arr[i - 1]) betCuoi++;
+    else break;
   }
 
-  let maxBet = 1;
-  let cur = 1;
+  // đếm số lần đảo
   let dao = 0;
-
-  for (let i = 1; i < chuoi.length; i++) {
-    if (chuoi[i] === chuoi[i - 1]) {
-      cur++;
-      maxBet = Math.max(maxBet, cur);
-    } else {
-      dao++;
-      cur = 1;
-    }
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] !== arr[i - 1]) dao++;
   }
 
-  if (maxBet >= 4) {
-    return {
-      ket_luan: "THEO DÀI",
-      ly_do: `Bệt ${maxBet} phiên`,
-    };
+  let ket_luan = "";
+  let ly_do = "";
+
+  // RULE 1: bệt cuối dài
+  if (betCuoi >= 3) {
+    ket_luan = "THEO DÀI";
+    ly_do = `Bệt cuối ${betCuoi}`;
   }
 
-  if (dao >= chuoi.length - 3) {
-    return {
-      ket_luan: "THEO NGẮN",
-      ly_do: "Đảo liên tục",
-    };
+  // RULE 2: đảo nhiều
+  else if (dao >= arr.length / 2) {
+    ket_luan = "THEO NGẮN";
+    ly_do = "Đảo nhịp liên tục";
+  }
+
+  // RULE 3: còn lại → bẻ
+  else {
+    ket_luan = "BẺ";
+    ly_do = "Xu hướng yếu, gãy nhịp";
   }
 
   return {
-    ket_luan: "BẺ",
-    ly_do: "Chuỗi loạn",
+    ket_luan,
+    ly_do
   };
 }
 
