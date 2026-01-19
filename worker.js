@@ -4,16 +4,31 @@ const phanTich = require("./phanTich");
 const { tachChuoi } = require("./tachChuoi");
 const guiTelegram = require("./telegram");
 
+let lastKQ = null;              // ✅ chống cộng chuỗi khi reload
+let sentCau = new Set();        // ✅ chống spam telegram
+
 async function worker() {
   console.log("⏱ Worker tick");
 
-  const kq = await layKetQua();
+  const kq = await layKetQua(); // kq = "T" hoặc "X"
   console.log("📥 Kết quả API:", kq);
   if (!kq) return;
 
   let chuoi = docChuoi() || "";
-  chuoi += kq;
-  ghiChuoi(chuoi);
+
+  // ✅ CHỐNG LOAD / RESTART BỊ CỘNG CHUỖI
+  if (kq === lastKQ && chuoi.endsWith(kq)) {
+    console.log("⏩ Kết quả cũ – bỏ qua");
+    return;
+  }
+
+  lastKQ = kq;
+
+  // ✅ CHỈ CỘNG KHI THỰC SỰ CÓ VÁN MỚI
+  if (!chuoi.endsWith(kq)) {
+    chuoi += kq;
+    ghiChuoi(chuoi);
+  }
 
   console.log("🔢 Chuỗi hiện tại:", chuoi);
 
@@ -29,6 +44,11 @@ async function worker() {
     if (c.length < 2) continue;
 
     const pt = phanTich(c);
+    const key = c + pt.ket_luan;
+
+    // ✅ CHỐNG GỬI LẠI CẦU CŨ
+    if (sentCau.has(key)) continue;
+    sentCau.add(key);
 
     const msg =
 `🎮 Game: Sunwin
