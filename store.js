@@ -1,13 +1,15 @@
 const fs = require("fs");
-const FILE = "./chuoi.txt";
+const FILE = "./data.json";
 
-function docChuoi() {
-  if (!fs.existsSync(FILE)) return "";
-  return fs.readFileSync(FILE, "utf8");
+function docDuLieu() {
+  if (!fs.existsSync(FILE)) {
+    return { chuoi: "", phien_cuoi: null };
+  }
+  return JSON.parse(fs.readFileSync(FILE));
 }
 
-function ghiChuoi(chuoi) {
-  fs.writeFileSync(FILE, chuoi.slice(-100));
+function ghiDuLieu(data) {
+  fs.writeFileSync(FILE, JSON.stringify(data));
 }
 
-module.exports = { docChuoi, ghiChuoi };
+module.exports = { docDuLieu, ghiDuLieu };
