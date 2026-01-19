@@ -1,23 +1,24 @@
 const axios = require("axios");
 
-const API_GOC = "https://sunwinsaygex-pcl2.onrender.com/api/sun";
+const API_URL = "https://sunwinsaygex-pcl2.onrender.com/api/sun";
 
-async function layKetQua() {
+module.exports = async function layKetQua() {
   try {
-    const res = await axios.get(API_GOC, { timeout: 5000 });
-    const data = res.data;
+    const res = await axios.get(API_URL, { timeout: 5000 });
 
-    if (!data || !data.ket_qua) return null;
+    const ketQua = res.data?.ket_qua;
+    if (!ketQua) {
+      console.log("❌ API không có ket_qua");
+      return null;
+    }
 
-    const kq = data.ket_qua.toString().toLowerCase();
+    if (ketQua === "Tài") return "T";
+    if (ketQua === "Xỉu") return "X";
 
-    if (kq.includes("t")) return "T"; // Tài
-    if (kq.includes("x")) return "X"; // Xỉu
-
+    console.log("❌ ket_qua lạ:", ketQua);
     return null;
-  } catch (err) {
+  } catch (e) {
+    console.log("❌ Lỗi gọi API:", e.message);
     return null;
   }
-}
-
-module.exports = layKetQua;
+};
