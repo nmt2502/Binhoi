@@ -1,17 +1,32 @@
 const express = require("express");
-require("./worker"); // chạy ngầm
+const { docChuoi } = require("./store");
+const phanTich = require("./phanTich");
+require("./worker");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ROOT
 app.get("/", (req, res) => {
   res.send("Bot đang chạy ngầm OK");
 });
 
-// PING cho UptimeRobot
 app.get("/ping", (req, res) => {
   res.send("pong");
+});
+
+// ✅ CHECK CHUỖI
+app.get("/check/chuoi", (req, res) => {
+  const chuoi = docChuoi() || "";
+  const pt = phanTich(chuoi);
+
+  res.json({
+    game: "sunwin",
+    chuoi,
+    do_dai: chuoi.length,
+    ket_luan: pt.ket_luan,
+    ly_do: pt.ly_do,
+    thuat_toan: `${chuoi} → ${pt.ket_luan}`
+  });
 });
 
 app.listen(PORT, () => {
